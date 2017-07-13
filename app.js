@@ -1,4 +1,5 @@
 const express = require('express');
+const mustacheExpress = require('mustache-express');
 const mongoose = require('mongoose');
 mongoose.Promise = require('bluebird');
 const path = require('path');
@@ -6,46 +7,56 @@ const bodyParser = require('body-parser');
 const passport = require('passport');
 const BasicStrategy = require('passport-http').BasicStrategy;
 const bcrypt = require('bcryptjs');
-
+const session = require('express-session')
 const router = require('./routes.js')
 const Stat = require('./models/stat.js');
 const User = require('./models/user.js');
 
 const app = express();
 
+app.use(session({
+  secret: 'keyboard cat',
+  resave: false,
+  saveUninitialized: true
+}))
+
 // Replace "test" with your database name.
 mongoose.connect('mongodb://localhost:27017/stat_tracker_db');
 
+app.engine('mustache', mustacheExpress());
+app.set('views', './views');
+app.set('view engine', 'mustache');
+app.use(express.static('./public'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false}));
 app.use('/', router);
 
 
-passport.use(new BasicStrategy(
-  function(username, passport, done) {
-    User.findOne({username: username}), function(err, user){
-      if(user && bcrypt.compareSync(password, user.password)){
-        return done(null, user);
-      }
-      return done(null, false);
-      }
-    }
-  ));
+// passport.use(new BasicStrategy(
+//   function(username, passport, done) {
+//     User.findOne({username: username}), function(err, user){
+//       if(user && bcrypt.compareSync(password, user.password)){
+//         return done(null, user);
+//       }
+//       return done(null, false);
+//       }
+//     }
+//   ));
 
 
-app.use(passport.authenticate('basic', {session: false}));
+// app.use(passport.authenticate('basic', {session: false}));
+//
+// app.get('/api/auth', function(req, res) {
+//     res.send('You have been authenticated, ' + req.user.username);
+// });
 
-app.get('/api/auth', function(req, res) {
-    res.send('You have been authenticated, ' + req.user.username);
-});
-
-let stat = new Stat({activity: 'walking', value: 2});
-
-stat.save().then(function() {
-  console.log("a new stat has been added to the db!")
-}).catch(function() {
-  console.log("Womp, womp")
-})
+// let stat = new Stat({activity: 'walking', value: 2});
+//
+// stat.save().then(function() {
+//   console.log("a new stat has been added to the db!")
+// }).catch(function() {
+//   console.log("Womp, womp")
+// })
 
 
 app.listen(2000, function () {
