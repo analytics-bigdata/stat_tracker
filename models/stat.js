@@ -1,12 +1,11 @@
-
 const mongoose = require('mongoose');
 mongoose.Promise = require('bluebird');
 
 const statSchema = new mongoose.Schema({
-  createdAt: { type: Date },
-  activity: { type: String },
+  date: { type: Date },
+  activity: { type: Number },
   value: { type: Number },
-  metric: { type: String}
+  username: { type: String }
 })
 
 const Stat = mongoose.model('Stat', statSchema);

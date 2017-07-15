@@ -1,11 +1,15 @@
 const mongoose = require('mongoose');
-// const bcrypt = require('bcryptjs');
+const bcrypt = require('bcryptjs');
 mongoose.Promise = require('bluebird');
 
 const userSchema = new mongoose.Schema({
   username: { type: String },
   password: { type: String }
 })
+
+userSchema.methods.verifyPassword = function(password) {
+  return this.password === password;
+}
 
 const User = mongoose.model('User', userSchema);
 
