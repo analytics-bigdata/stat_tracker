@@ -14,20 +14,3 @@ exports.authenticate = function (req, email, password, fn){
     })
     return authenticatedUser;
 }
-
-exports.newStat = function (req, activity, value, metric) {
-    var newStat = new Stat({
-       activity: activity,
-       value: value,
-       metric: metric
-      });
-  return newStat;
-}
-
-exports.createAccount = function (req, username, password) {
-    var newAccount = new User({
-       username: username,
-       password: password
-      });
-  return newAccount;
-}
